@@ -1,40 +1,40 @@
 import type { Metadata } from "next";
-import { Anton, Outfit, Dancing_Script, Pacifico } from 'next/font/google';
-import MainLayout from '@/components/layout/MainLayout';
+import { Anton, Outfit, Dancing_Script, Pacifico } from "next/font/google";
+import MainLayout from "@/components/layout/MainLayout";
 
 import "./globals.css";
 
-import { config } from '@fortawesome/fontawesome-svg-core';
-import '@fortawesome/fontawesome-svg-core/styles.css';
+import { config } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
 config.autoAddCss = false;
 
 const anton = Anton({
-  subsets: ['latin'],
-  weight: '400',
-  variable: '--font-display',
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-display",
 });
 
 const outfit = Outfit({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-sans',
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-sans",
 });
 
 const dancingScript = Dancing_Script({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  variable: '--font-script-soft',
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-script-soft",
 });
 
 const pacifico = Pacifico({
-  subsets: ['latin'],
-  weight: '400',
-  variable: '--font-script-bold',
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-script-bold",
 });
 
 export const metadata: Metadata = {
-  title: 'Zone 25-14',
-  description: 'Where loyalty and rebellion meet.',
+  title: "Zone 25-14",
+  description: "Where loyalty and rebellion meet.",
 };
 
 export default function RootLayout({
@@ -44,10 +44,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${anton.variable} ${outfit.variable} ${dancingScript.variable} ${pacifico.variable}`}>
-        <MainLayout>
-          {children}
-        </MainLayout>
+      <body
+        className={`${anton.variable} ${outfit.variable} ${dancingScript.variable} ${pacifico.variable}`}
+      >
+        <MainLayout>{children}</MainLayout>
       </body>
     </html>
   );

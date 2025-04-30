@@ -1,21 +1,20 @@
 @import "tailwindcss";
 
 :root {
-
   /*----------------------------------------------------*/
   /*------------------TYPOGRAPHY SYSTEM-----------------*/
   /*----------------------------------------------------*/
 
   /*------------------FONT FAMILIES------------------*/
 
-  --font-sans: 'Outfit', sans-serif;
+  --font-sans: "Outfit", sans-serif;
   /* Main UI font */
-  --font-heading: 'Outfit', sans-serif;
-  --font-display: 'Anton', sans-serif;
+  --font-heading: "Outfit", sans-serif;
+  --font-display: "Anton", sans-serif;
   /* Hero / promo */
-  --font-script-soft: 'Dancing Script', cursive;
+  --font-script-soft: "Dancing Script", cursive;
   /* Personal, soft */
-  --font-script-bold: 'Pacifico', cursive;
+  --font-script-bold: "Pacifico", cursive;
   /* Eye-catching signature */
 
   /* Optional: Line Heights & Letter Spacing */
@@ -119,7 +118,6 @@
   /* #DCCDB4 Soft Sand */
   --Camel-Skin: hsl(30, 38%, 68%);
   /* #C8AD7F Camel Skin */
-
 
   /*---------------------GRAY COLORS---------------------*/
 
@@ -292,7 +290,6 @@
   --Inferno: hsl(10, 90%, 46%);
   /* #E25822 Inferno */
 
-
   /*---------------------GREEN COLORS---------------------*/
 
   --Light-Emerald-Green: hsl(125, 32%, 77%);
@@ -363,7 +360,6 @@
   /* #7FFFD4 Aquamarine */
   --Mint: hsl(150, 50%, 85%);
   /* #AAF0D1 Mint */
-
 
   /*---------------------VIOLET COLORS---------------------*/
 
@@ -445,10 +441,12 @@
 
   /*---------------------METALLIC---------------------*/
 
-  --Golden-Yellow-Gradient: radial-gradient(circle,
-      rgba(255, 191, 0, 1) 0%,
-      rgba(255, 207, 64, 1) 36%,
-      rgba(255, 220, 115, 1) 100%);
+  --Golden-Yellow-Gradient: radial-gradient(
+    circle,
+    rgba(255, 191, 0, 1) 0%,
+    rgba(255, 207, 64, 1) 36%,
+    rgba(255, 220, 115, 1) 100%
+  );
   /* Golden Yellow Gradient */
   --Metallic-Gold: hsl(45, 100%, 50%);
   /* #FFD700 Metallic Gold */
@@ -607,7 +605,6 @@
   /* 24–48px */
   --space-fluid-xl: clamp(2rem, 5vw, 4rem);
   /* 32–64px */
-
 }
 
 /*----------------------------------------------*/
@@ -709,8 +706,7 @@ button {
   color: var(--White);
 }
 
-
-
 @media (prefers-color-scheme: dark) {
-  :root {}
+  :root {
+  }
 }
