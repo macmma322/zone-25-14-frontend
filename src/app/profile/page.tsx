@@ -65,6 +65,30 @@ export default function ProfilePage() {
               {user.role}
             </span>
           </p>
+          {typeof user.next_rank === "object" ? (
+            <>
+              <p>
+                <strong>⬆️ Next Rank:</strong> {user.next_rank.name}{" "}
+                <em>({user.next_rank.points_needed} points left)</em>
+              </p>
+              <div className="w-full bg-gray-800 h-4 rounded overflow-hidden mt-2">
+                <div
+                  className="bg-[var(--Scarlet-Red)] h-full"
+                  style={{
+                    width: `${
+                      (user.points /
+                        (user.points + user.next_rank.points_needed)) *
+                      100
+                    }%`,
+                  }}
+                />
+              </div>
+            </>
+          ) : (
+            <p>
+              <strong>⬆️ Next Rank:</strong> {user.next_rank}
+            </p>
+          )}
         </div>
 
         <div className="pt-6 flex flex-col sm:flex-row gap-4 justify-between">
