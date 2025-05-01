@@ -1,42 +1,59 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+"use client";
 
-export default function Home() {
+import { useAuth } from "@/hooks/useAuth";
+import Link from "next/link";
+import GlitchButton from "@/components/ui/GlitchButton";
+import Button from "@/components/ui/Button";
+import { logoutUser } from "@/utils/apiFunctions";
+import { useRouter } from "next/navigation"; // ✅ correct
+
+export default function HomePage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  if (loading) return <p className="text-center text-lg p-10">Loading...</p>;
+
+  const handleLogout = () => {
+    logoutUser();
+    router.push("/");
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-gradient-to-b from-black via-gray-900 to-gray-800 text-white">
-      <h1 className="text-5xl md:text-7xl font-bold text-center mb-8">
-        Welcome to <span className="text-blue-500">Zone 25-14</span>
-      </h1>
-      <p className="text-lg md:text-2xl text-center mb-12 max-w-2xl">
-        Loyalty. Brotherhood. Rebellion.
-        <br />
-        Where outsiders build a legacy.
-      </p>
-      <div className="flex flex-wrap gap-6 justify-center">
-        <a
-          href="/login"
-          className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-semibold transition"
-        >
-          Login
-        </a>
-        <a
-          href="/register"
-          className="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-lg text-white font-semibold transition"
-        >
-          Register
-        </a>
-        <a
-          href="/products"
-          className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg text-white font-semibold transition"
-        >
-          Explore Products
-        </a>
-
-        <div className="flex items-center gap-2">
-          <FontAwesomeIcon icon={faShoppingCart} size="lg" />
-          <span>Add to Cart</span>
-        </div>
-      </div>
-    </div>
+    <main className="min-h-screen bg-[var(--Warm-Off-White)] dark:bg-[var(--Void-Black)] text-black dark:text-white flex flex-col items-center justify-center px-6">
+      {user ? (
+        <>
+          <h1 className="text-4xl font-display mb-4 text-center">
+            Welcome back,{" "}
+            <span className="text-[var(--Scarlet-Red)]">{user.username}</span>{" "}
+            👋
+          </h1>
+          <p className="text-lg max-w-xl text-center">
+            You`re in the Zone now. Explore your subscriptions, wishlist, and
+            the rebellion.
+          </p>
+          <Button onClick={() => router.push("/profile")}>Go to Profile</Button>
+          <Button onClick={handleLogout}>Logout</Button>
+        </>
+      ) : (
+        <>
+          <h1 className="text-5xl font-display mb-4 text-center">
+            Welcome to{" "}
+            <span className="text-[var(--Scarlet-Red)]">Zone 25-14</span>
+          </h1>
+          <p className="text-lg max-w-xl text-center mb-8">
+            Loyalty. Passion. Rebellion. Family. A platform for the dreamers who
+            never fit in — but always belonged.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link href="/auth/login">
+              <GlitchButton label="Login" />
+            </Link>
+            <Link href="/auth/register">
+              <GlitchButton label="Join the Zone" />
+            </Link>
+          </div>
+        </>
+      )}
+    </main>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Anton, Outfit, Dancing_Script, Pacifico } from "next/font/google";
 import MainLayout from "@/components/layout/MainLayout";
+import { NicheProvider } from "@/context/NicheContext";
 
 import "./globals.css";
 
@@ -37,17 +38,13 @@ export const metadata: Metadata = {
   description: "Where loyalty and rebellion meet.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body
-        className={`${anton.variable} ${outfit.variable} ${dancingScript.variable} ${pacifico.variable}`}
-      >
-        <MainLayout>{children}</MainLayout>
+      <body>
+        <NicheProvider>
+          {children}
+        </NicheProvider>
       </body>
     </html>
   );
