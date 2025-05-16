@@ -1,0 +1,255 @@
+/* === STRUCTURE === */
+.theme-toggle-button {
+  position: relative;
+  display: inline-block;
+  width: 90px;
+  height: 50px;
+  cursor: pointer;
+}
+.theme-toggle-button input {
+  display: none;
+}
+.switch-body {
+  width: 100%;
+  height: 100%;
+  border-radius: 50px;
+  background: linear-gradient(145deg, #f1c40f, #f39c12);
+  transition: background 0.5s ease;
+  overflow: hidden;
+  position: relative;
+}
+input:checked + .switch-body {
+  background: linear-gradient(145deg, #1e2a48, #2b3e5a);
+}
+
+/* === TOGGLE SLIDER === */
+.slider {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 42px;
+  height: 42px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 5;
+  transition: transform 0.5s ease;
+}
+input:checked + .switch-body .slider {
+  transform: translateX(40px);
+}
+
+/* === SUN & MOON === */
+.sun,
+.moon {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: absolute;
+  z-index: 1;
+  transition: opacity 0.5s ease;
+}
+.sun {
+  background: radial-gradient(circle at center, #ffe066, #ffc107);
+  opacity: 1;
+}
+.moon {
+  background: radial-gradient(circle at center, #c4c9d1, #959db1);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  overflow: hidden;
+  position: relative;
+}
+input:checked + .switch-body .sun {
+  opacity: 0;
+}
+input:checked + .switch-body .moon {
+  opacity: 1;
+}
+
+/* === MOON SPOTS === */
+.moon-spot {
+  position: absolute;
+  background: #7a7f8c;
+  border-radius: 50%;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.25) inset;
+  pointer-events: none;
+}
+
+/* === CLOUDS === */
+.cloud {
+  position: absolute;
+  width: 40px;
+  fill: rgba(255, 255, 255, 0.6);
+  animation: floatCloud linear infinite;
+}
+.cloud.night {
+  fill: rgba(255, 255, 255, 0.2);
+}
+@keyframes floatCloud {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(80px);
+  }
+}
+input:not(:checked) + .switch-body .night-clouds {
+  display: none;
+}
+input:checked + .switch-body .day-clouds {
+  display: none;
+}
+
+/* === LEAVES === */
+.falling-leaves .leaf {
+  position: absolute;
+  top: -20px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50% 50% 50% 0;
+  animation-name: leafFall;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  opacity: 0.7;
+}
+@keyframes leafFall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+input:checked + .switch-body .falling-leaves {
+  display: none;
+}
+
+/* === STARS === */
+.stars .star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  animation: twinkle 2s infinite ease-in-out;
+  box-shadow: 0 0 5px white;
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+input:not(:checked) + .switch-body .stars {
+  display: none;
+}
+
+/* === AURORA === */
+.aurora {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 255, 255, 0.2),
+    rgba(128, 0, 255, 0.2),
+    rgba(0, 255, 255, 0.2)
+  );
+  filter: blur(6px);
+  opacity: 0.4;
+  animation: auroraWave 8s linear infinite;
+  z-index: 0;
+}
+@keyframes auroraWave {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(50%);
+  }
+}
+input:not(:checked) + .switch-body .aurora {
+  display: none;
+}
+
+/* === COMETS === */
+.comets {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.comet {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: white;
+  border-radius: 50%;
+  animation: cometMove 3s linear infinite;
+  filter: blur(1px);
+}
+.comet1 {
+  top: 20%;
+  left: -10%;
+}
+.comet2 {
+  top: 50%;
+  left: -10%;
+  animation-delay: 1.5s;
+}
+
+/* === TRAIL DOTS === */
+.comet-dot {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0;
+  animation: trailDotAnim 1s forwards;
+  transform: translate(0, 0);
+}
+.comet1 .comet-dot {
+  animation-name: cometDotPath1;
+}
+.comet2 .comet-dot {
+  animation-name: cometDotPath2;
+}
+
+@keyframes cometDotPath1 {
+  0% {
+    transform: translate(0px, 0px);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(150px, 150px);
+    opacity: 0;
+  }
+}
+@keyframes cometDotPath2 {
+  0% {
+    transform: translate(0px, 0px);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(160px, 130px);
+    opacity: 0;
+  }
+}
+
+@keyframes trailDotAnim {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+input:not(:checked) + .switch-body .comets {
+  display: none;
+}

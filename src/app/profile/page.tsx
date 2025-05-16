@@ -5,6 +5,7 @@ import { logoutUser } from "@/utils/apiFunctions";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import { useEffect } from "react";
+import { rolesMeta } from "@/types/Role"; // ✅ Ensure correct path
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
@@ -27,7 +28,10 @@ export default function ProfilePage() {
     Founder: "bg-purple-800 text-white",
     "Store Chief": "bg-yellow-500 text-black",
     "Hype Lead": "bg-pink-600 text-white",
+    Moderator: "bg-blue-800 text-white",
   };
+
+  const meta = rolesMeta[user.role ?? ""];
 
   const formattedDate = new Date(user.created_at).toLocaleDateString("en-US", {
     year: "numeric",
@@ -55,16 +59,23 @@ export default function ProfilePage() {
           <p>
             <strong>💰 Store Credit:</strong> {user.store_credit ?? 0} points
           </p>
-          <p>
-            <strong>🎭 Role:</strong>{" "}
-            <span
-              className={`inline-block px-2 py-1 rounded text-sm ${
-                roleStyles[user.role ?? ""] || "bg-gray-700"
-              }`}
-            >
-              {user.role}
-            </span>
-          </p>
+
+          <div>
+            <p>
+              <strong>🎭 Role:</strong>{" "}
+              <span
+                className={`inline-block px-2 py-1 rounded text-sm ${
+                  roleStyles[user.role ?? ""] || "bg-gray-700"
+                }`}
+              >
+                {meta?.title ?? user.role}
+              </span>
+            </p>
+            {meta?.description && (
+              <p className="text-sm text-gray-400 italic">{meta.description}</p>
+            )}
+          </div>
+
           {typeof user.next_rank === "object" ? (
             <>
               <p>
@@ -73,7 +84,7 @@ export default function ProfilePage() {
               </p>
               <div className="w-full bg-gray-800 h-4 rounded overflow-hidden mt-2">
                 <div
-                  className="bg-[var(--Scarlet-Red)] h-full"
+                  className="bg-[var(--Scarlet-Red)] h-full transition-all duration-500"
                   style={{
                     width: `${
                       (user.points /

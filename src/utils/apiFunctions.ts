@@ -5,8 +5,10 @@ import { User } from "@/types/User";
 import { UserPreferences } from "@/types/UserPreferences";
 import { UserPrivacy } from "@/types/UserPrivacy";
 
+// NEW return type includes user data
 interface LoginResponse {
   token: string;
+  user: User;
 }
 
 interface RegisterFormData {
@@ -21,19 +23,24 @@ interface UploadResponse {
 
 export const loginUser = async (
   username: string,
-  password: string
+  password: string,
+  setUser: (user: User | null) => void
 ): Promise<LoginResponse> => {
-  const res = await api.post<LoginResponse>("/auth/login", {
+  const res = await api.post<{ token: string }>("/auth/login", {
     username,
     password,
   });
-  console.log("LOGIN SUCCESS", res.data);
 
-  if (res.data.token) {
-    localStorage.setItem("authToken", res.data.token);
+  const token = res.data.token;
+
+  if (token) {
+    localStorage.setItem("authToken", token);
+    const user = await fetchUserProfile();
+    setUser(user); // ✅ updates AuthContext
+    return { token, user };
   }
 
-  return res.data;
+  throw new Error("Login failed — no token returned.");
 };
 
 export const registerUser = async (
@@ -43,8 +50,13 @@ export const registerUser = async (
   return res.data;
 };
 
-export const logoutUser = () => {
+export const logoutUser = (
+  setUser: (user: User | null) => void,
+  navigate: () => void
+) => {
   localStorage.removeItem("authToken");
+  setUser(null);
+  navigate(); // ← let the component decide how to route or refresh
 };
 
 export const fetchUserProfile = async (): Promise<User> => {

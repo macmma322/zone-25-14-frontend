@@ -1,32 +1,30 @@
+// zone-25-14-frontend/src/app/layout.tsx
+
 import type { Metadata } from "next";
 import { Anton, Outfit, Dancing_Script, Pacifico } from "next/font/google";
-import MainLayout from "@/components/layout/MainLayout";
-import { NicheProvider } from "@/context/NicheContext";
 
 import "./globals.css";
-
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 config.autoAddCss = false;
+
+import Providers from "@/components/layout/Providers"; // We'll create this
 
 const anton = Anton({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-display",
 });
-
 const outfit = Outfit({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-sans",
 });
-
 const dancingScript = Dancing_Script({
   subsets: ["latin"],
   weight: ["400", "700"],
   variable: "--font-script-soft",
 });
-
 const pacifico = Pacifico({
   subsets: ["latin"],
   weight: "400",
@@ -38,13 +36,17 @@ export const metadata: Metadata = {
   description: "Where loyalty and rebellion meet.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body>
-        <NicheProvider>
-          {children}
-        </NicheProvider>
+      <body
+        className={`${outfit.variable} ${anton.variable} ${dancingScript.variable} ${pacifico.variable} font-sans bg-gradient-to-br from-[#0f0f0f] to-[#1b1b1b] text-white`}
+      >
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

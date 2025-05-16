@@ -1,3 +1,9 @@
+// This file contains the TypeScript types for the User object and the UserResponse object.
+// These types are used to define the structure of the data returned by the API.
+// The User object represents a user in the system, and the UserResponse object represents the response from the API when fetching user data.
+// The User object includes properties such as user_id, username, email, phone, first_name, last_name, biography, profile_picture, points, next_rank, role_level_id, role, store_credit, and created_at.
+// The UserResponse object includes properties such as user, error, and success.
+
 export interface User {
   user_id: string;
   username: string;
