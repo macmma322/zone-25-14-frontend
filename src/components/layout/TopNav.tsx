@@ -79,7 +79,7 @@ export default function TopNav({
           </div>
 
           {/* Theme Toggle */}
-          <div className="ml-4">
+          <div className="relative">
             <ThemeToggle />
           </div>
         </div>

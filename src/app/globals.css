@@ -614,11 +614,88 @@
 /* Hide scrollbars globally but allow scroll */
 body,
 * {
-  scrollbar-width: none;         /* Firefox */
-  -ms-overflow-style: none;      /* IE 10+ */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
 }
 
 body::-webkit-scrollbar,
 *::-webkit-scrollbar {
-  display: none;                 /* Chrome, Safari, Opera */
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Light sweep animation */
+@keyframes sweep {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+.animate-sweep {
+  animation: sweep 2.2s ease-in-out infinite;
+}
+
+/* Glitch title effect */
+.glitch {
+  position: relative;
+  color: white;
+  text-shadow: 1px 0 red, -1px 0 blue;
+}
+.glitch span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.7;
+  clip: rect(0, 900px, 0, 0);
+}
+.glitch span:nth-child(2) {
+  animation: glitchTop 1s infinite linear alternate-reverse;
+}
+.glitch span:nth-child(3) {
+  animation: glitchBottom 1.5s infinite linear alternate-reverse;
+}
+
+@keyframes glitchTop {
+  0% {
+    clip: rect(0, 9999px, 0, 0);
+    transform: translate(1px, -1px);
+  }
+  100% {
+    clip: rect(0, 9999px, 5px, 0);
+    transform: translate(-1px, 1px);
+  }
+}
+
+@keyframes glitchBottom {
+  0% {
+    clip: rect(5px, 9999px, 9999px, 0);
+    transform: translate(-1px, 0);
+  }
+  100% {
+    clip: rect(10px, 9999px, 9999px, 0);
+    transform: translate(1px, 0);
+  }
+}
+
+/* 3D Flip base */
+.perspective {
+  perspective: 1000px;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

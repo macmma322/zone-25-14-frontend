@@ -81,7 +81,7 @@ export default function SidebarPanel({ isOpen, onClose }: SidebarPanelProps) {
         <div className="p-4 space-y-6 text-white text-sm">
           {user ? (
             <div className="space-y-4">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 relative">
                 {user.profile_picture ? (
                   <Image
                     src={user.profile_picture}
@@ -104,7 +104,20 @@ export default function SidebarPanel({ isOpen, onClose }: SidebarPanelProps) {
                     {user.role ?? "Member"}
                   </p>
                 </div>
+
+                {/* 👇 Add this right here for top-right Profile button */}
+                <div className="absolute right-0 top-1/2 -translate-y-1/2
+">
+                  <Link
+                    href={`/profile/${user.username}`}
+                    className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition backdrop-blur-sm "
+                  >
+                    <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
+                    Profile
+                  </Link>
+                </div>
               </div>
+
               <hr className="border-white/10" />
               <div className="space-y-3">
                 <Link

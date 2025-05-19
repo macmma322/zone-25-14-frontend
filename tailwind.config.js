@@ -1,12 +1,21 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+import aspectRatio from "@tailwindcss/aspect-ratio";
+
+const config = {
   content: [
     "./src/app/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: "class", // Enables theme toggling
+  darkMode: "class",
   theme: {
-    extend: {},
+    extend: {
+      aspectRatio: {
+        tall: "9 / 16",
+        square: "1 / 1",
+      },
+    },
   },
-  plugins: [],
+  plugins: [aspectRatio],
 };
+
+export default config;

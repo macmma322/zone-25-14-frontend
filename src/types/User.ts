@@ -3,6 +3,7 @@
 // The User object represents a user in the system, and the UserResponse object represents the response from the API when fetching user data.
 // The User object includes properties such as user_id, username, email, phone, first_name, last_name, biography, profile_picture, points, next_rank, role_level_id, role, store_credit, and created_at.
 // The UserResponse object includes properties such as user, error, and success.
+// File: src/types/User.ts
 
 export interface User {
   user_id: string;
@@ -34,3 +35,12 @@ export interface UserResponse {
   user: User;
   token: string;
 }
+
+export type PublicProfile = {
+  username: string;
+  biography: string;
+  profile_picture: string | null;
+  role_name: string;
+  title_name?: string;
+  badge_name?: string;
+};

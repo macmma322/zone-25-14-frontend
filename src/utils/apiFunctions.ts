@@ -1,7 +1,7 @@
 // src/utils/apiFunctions.ts
 
 import api from "./api";
-import { User } from "@/types/User";
+import { User, PublicProfile } from "@/types/User";
 import { UserPreferences } from "@/types/UserPreferences";
 import { UserPrivacy } from "@/types/UserPrivacy";
 
@@ -50,13 +50,30 @@ export const registerUser = async (
   return res.data;
 };
 
-export const logoutUser = (
+export const logoutUser = async (
   setUser: (user: User | null) => void,
   navigate: () => void
 ) => {
+  try {
+    await api.post("/auth/logout");
+  } catch {
+    // optional error handling
+  }
   localStorage.removeItem("authToken");
   setUser(null);
-  navigate(); // ← let the component decide how to route or refresh
+  navigate();
+};
+
+export const fetchCurrentUser = async (): Promise<User> => {
+  const res = await api.get<User>("/auth/me");
+  return res.data;
+};
+
+export const fetchUserByUsername = async (
+  username: string
+): Promise<PublicProfile> => {
+  const res = await api.get<PublicProfile>(`/users/${username}`);
+  return res.data;
 };
 
 export const fetchUserProfile = async (): Promise<User> => {

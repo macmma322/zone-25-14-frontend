@@ -22,7 +22,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
             isOpen={sidebarOpen}
             onClose={() => setSidebarOpen(false)}
           />
-          <main className="pt-24 min-h-screen w-full px-6">{children}</main>
+          <main className="min-h-screen w-full">{children}</main>
         </NicheProvider>
       </AuthProvider>
     </>

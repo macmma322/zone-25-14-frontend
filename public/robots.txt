@@ -1,0 +1,12 @@
+# robots.txt for Zone 25-14
+User-agent: *
+Disallow: /account/
+Disallow: /auth/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /messages/
+Disallow: /api/
+Allow: /
+
+# (Optional) Add your sitemap link here when ready
+# Sitemap: https://zone25-14.com/sitemap.xml

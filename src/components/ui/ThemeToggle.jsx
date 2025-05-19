@@ -1,4 +1,5 @@
 // ThemeToggle.jsx — Hydration-safe Version with Dynamic Visuals and State-based Randomization
+"use client";
 
 import React, { useEffect, useState } from "react";
 import "./ThemeToggle.css";
