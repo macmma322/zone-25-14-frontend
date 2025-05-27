@@ -1,24 +1,31 @@
-// File: src/middleware/uploadMiddleware.js
-import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
 
-interface DecodedToken {
-  userId: string;
-  username: string;
-  role: string;
-  iat: number;
-  exp: number;
-}
-
-export async function getServerUser(): Promise<{ token: string; decoded: DecodedToken } | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("authToken")?.value;
-  if (!token) return null;
-
+export async function getServerUser() {
   try {
-    const decoded = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET!) as DecodedToken;
-    return { token, decoded };
-  } catch {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("authToken")?.value;
+
+    if (!token) return null;
+
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET environment variable is not defined");
+    }
+
+    interface JwtPayload {
+      userId: string;
+      username: string;
+      role: string;
+      [key: string]: unknown;
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
+    return {
+      userId: decoded.userId,
+      username: decoded.username,
+      role: decoded.role,
+    };
+  } catch (err) {
+    console.error("getServerUser error:", err);
     return null;
   }
 }

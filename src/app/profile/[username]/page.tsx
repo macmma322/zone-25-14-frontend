@@ -1,55 +1,93 @@
+// File: src/app/profile/[username]/page.tsx
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import { fetchUserByUsername } from "@/utils/apiFunctions";
+import { fetchUserByUsername } from "@/utils/api/userApi";
 import type { User, PublicProfile } from "@/types/User";
 import { rolesMeta } from "@/types/Role";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { fetchWithAuth } from "@/utils/server/fetchWithAuth";
 import {
   faUser,
   faShieldHalved,
   faStar,
   faPen,
 } from "@fortawesome/free-solid-svg-icons";
-import { getServerUser } from "@/utils/server/getServerUser";
+import Image from "next/image";
 
 export const runtime = "nodejs";
 
-interface Props {
-  params: Promise<{ username: string }>;
-}
+export default async function Page({
+  params,
+}: {
+  params: { username: string };
+}) {
+  const { username } = await params;
 
-export default async function Page(props: Props) {
-  const { username } = await props.params;
+  // Read authToken cookie from request
+  const cookieStore = cookies();
+  const authToken = (await cookieStore).get("authToken")?.value;
 
   let user: User | PublicProfile | null = null;
   let isCurrentUser = false;
 
-const serverUser = await getServerUser();
+  try {
+    if (authToken) {
+      // Decode token to check if logged-in user matches profile username
+      const jwt = await import("jsonwebtoken");
+      const secret = process.env.JWT_SECRET;
 
-if (serverUser && serverUser.decoded.username === username) {
-  user = await fetchWithAuth("/users/profile", serverUser.token);
-  isCurrentUser = true;
-} else {
-  user = await fetchUserByUsername(username);
-}
+      if (!secret) {
+        throw new Error("JWT_SECRET is not defined");
+      }
 
-  if (!user || !user.username) return notFound();
+      const decoded = jwt.verify(authToken, secret) as {
+        username: string;
+      };
 
+      if (decoded.username === username) {
+        // Fetch private profile using token (pass cookie manually)
+        const res = await fetch("http://localhost:5000/api/users/profile", {
+          headers: {
+            Cookie: `authToken=${authToken}`,
+          },
+        });
+        if (!res.ok) {
+          throw new Error("Failed to fetch private profile");
+        }
+        user = await res.json();
+        isCurrentUser = true;
+      }
+    }
+
+    if (!user) {
+      // Fetch public profile if not logged-in user or no token
+      user = await fetchUserByUsername(username);
+    }
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    return notFound();
+  }
+
+  if (!user || !user.username) {
+    return notFound();
+  }
+
+  // Determine role name & metadata
   const roleName =
     "role" in user
       ? user.role ?? "Explorer"
-      : (user as PublicProfile).role_name;
+      : "role_name" in user
+      ? user.role_name ?? "Explorer"
+      : "Explorer";
+
   const roleMeta = rolesMeta[roleName] || rolesMeta["Explorer"];
+
+  // Get avatar URL
   const avatar =
     "avatar" in user ? user.avatar : user.profile_picture ?? undefined;
+
+  // Border color for avatar depending on role
   const borderColor =
     roleName === "Founder" ? "border-yellow-400" : "border-white/20";
-  console.log(
-    "🧪 serverUser.username",
-    serverUser?.decoded.username,
-    "| route param:",
-    username
-  );
 
   return (
     <div
@@ -73,10 +111,13 @@ if (serverUser && serverUser.decoded.username === username) {
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center gap-6">
             {avatar ? (
-              <img
+              <Image
                 src={avatar as string}
                 alt="avatar"
+                width={80}
+                height={80}
                 className={`w-20 h-20 rounded-full object-cover border-4 ${borderColor}`}
+                priority
               />
             ) : (
               <div
@@ -85,6 +126,7 @@ if (serverUser && serverUser.decoded.username === username) {
                 <FontAwesomeIcon icon={faUser} />
               </div>
             )}
+
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
                 {user.username}
@@ -92,6 +134,7 @@ if (serverUser && serverUser.decoded.username === username) {
               <p className="text-sm text-white/50 mt-1 uppercase tracking-wider">
                 {roleMeta.title}
               </p>
+
               {"title_name" in user && user.title_name && (
                 <p className="text-yellow-400 text-xs mt-1 flex items-center gap-1">
                   <FontAwesomeIcon icon={faStar} className="text-yellow-300" />

@@ -12,7 +12,6 @@ config.autoAddCss = false;
 
 import Providers from "@/components/layout/Providers"; // We'll create this
 
-
 export const metadata: Metadata = {
   title: {
     default: "Zone 25-14",
@@ -22,10 +21,9 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icons/favicon.ico", // standard browser tab icon
     shortcut: "/icons/favicon.png", // PNG fallback
-    apple: "/icons/android-chrome-192x192.png" // iOS add-to-home
+    apple: "/icons/android-chrome-192x192.png", // iOS add-to-home
   },
 };
-
 
 const anton = Anton({
   subsets: ["latin"],
@@ -47,7 +45,6 @@ const pacifico = Pacifico({
   weight: "400",
   variable: "--font-script-bold",
 });
-
 
 export default function RootLayout({
   children,

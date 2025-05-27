@@ -1,7 +1,7 @@
+// File: src/app/auth/login/LoginClient.tsx
 "use client";
 
 import { useState } from "react";
-import { loginUser } from "@/utils/apiFunctions";
 import { useRouter } from "next/navigation";
 import { isAxiosError } from "axios";
 import { useAuth } from "@/context/AuthContext";
@@ -14,32 +14,22 @@ export default function LoginClient() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { login, loading } = useAuth();
   const router = useRouter();
-  const { setUser } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
+
     try {
-      const res = await loginUser(username, password, setUser);
-
-      // ✅ Store token in cookie for server-side access
-      document.cookie = `authToken=${res.token}; path=/; max-age=86400; SameSite=Strict; Secure`;
-
-      // ✅ Also store in localStorage for client utilities
-      localStorage.setItem("authToken", res.token);
-
-      router.push("/profile/" + res.user.username);
+      await login(username, password);
+      router.push(`/profile/${username}`);
     } catch (err: unknown) {
       if (isAxiosError(err) && err.response?.data?.message) {
         setError(err.response.data.message);
       } else {
         setError("An unknown error occurred.");
       }
-    } finally {
-      setLoading(false);
     }
   };
 

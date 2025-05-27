@@ -1,41 +1,91 @@
-// This file is used to configure Next.js settings and behaviors.
-// It includes settings for the API URL, authentication, and other global configurations.
-// The API URL is set based on the environment (development or production) and is used to make requests to the backend.
-// File: src/utils/api.ts
-import axios from "axios";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
-// Create an Axios instance with base settings
 const api = axios.create({
   baseURL: API_URL,
+  withCredentials: true, // send cookies with requests
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true, // Include credentials (cookies) with requests
 });
 
-// Attach token to every request if user is logged in
-// Only attach token if we're in the browser
-api.interceptors.request.use((config) => {
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("authToken");
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+// Flag to track token refreshing status
+let isRefreshing = false;
+// Queue to hold requests while refreshing token
+let failedQueue: {
+  resolve: (value?: unknown) => void;
+  reject: (error: unknown) => void;
+}[] = [];
+
+// Function to process queue after token refresh or failure
+const processQueue = (error: unknown, token: string | null = null) => {
+  failedQueue.forEach(({ resolve, reject }) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(token);
     }
-  }
+  });
+  failedQueue = [];
+};
 
-  return config;
-});
+// Optional: Define a function to refresh token here if using refresh tokens.
+// Since you're using JWT in cookies, you might just retry the original request after login or logout.
+// If you plan to have a refresh endpoint, implement this function to call it.
 
 api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
-      localStorage.removeItem("authToken");
-      // Optional: redirect to login
+  (response) => response, // Pass through successful responses
+  async (error: AxiosError) => {
+    const originalRequest = error.config as AxiosRequestConfig & {
+      _retry?: boolean;
+    };
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry // avoid infinite loop
+    ) {
+      if (isRefreshing) {
+        // If a refresh is already in progress, queue the request until done
+        return new Promise((resolve, reject) => {
+          failedQueue.push({
+            resolve: (token) => {
+              if (!originalRequest.headers) return;
+              if (token) {
+                originalRequest.headers["Authorization"] = `Bearer ${token}`;
+              }
+              resolve(api(originalRequest));
+            },
+            reject,
+          });
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        // Optionally call your refresh token endpoint here
+        // For now, just fail and logout user since token expired
+        // e.g. await api.post("/auth/refresh");
+
+        // Or just logout:
+        // clear user data, tokens, cookies etc.
+
+        // Reject all queued requests
+        processQueue("Unauthorized");
+
+        // Redirect user or trigger logout UI here if desired
+        // For example:
+        // window.location.href = "/auth/login";
+
+        return Promise.reject(error);
+      } finally {
+        isRefreshing = false;
+      }
     }
-    return Promise.reject(err);
+
+    return Promise.reject(error);
   }
 );
 

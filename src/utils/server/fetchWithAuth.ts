@@ -1,11 +1,21 @@
-export async function fetchWithAuth(endpoint: string, token: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    cache: "no-store",
-  });
+// This file is part of the Zone 25-14 project, which is released under the GNU General Public License v3.0.
+// File: src/utils/server/fetchWithAuth.ts
+import api from "../api";
 
-  if (!res.ok) throw new Error(`Failed to fetch ${endpoint}`);
-  return res.json();
-}
+export const fetchWithAuth = async (
+  url: string,
+  method = "GET",
+  body?: unknown
+) => {
+  try {
+    const response = await api.request({
+      url,
+      method,
+      data: body,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Auth fetch error:", error);
+    throw error;
+  }
+};

@@ -1,4 +1,3 @@
-// File: components/layout/SidebarPanel.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -23,7 +22,7 @@ interface SidebarPanelProps {
 }
 
 export default function SidebarPanel({ isOpen, onClose }: SidebarPanelProps) {
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth(); // ✅ added loading
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -48,9 +47,10 @@ export default function SidebarPanel({ isOpen, onClose }: SidebarPanelProps) {
     ) {
       onClose();
     }
-  }, [pathname]);
+  }, [pathname, isOpen, onClose]);
 
-  if (!mounted || typeof window === "undefined") return null;
+  // ✅ wait until mounted AND auth is done loading
+  if (!mounted || typeof window === "undefined" || loading) return null;
 
   return createPortal(
     <>
@@ -72,7 +72,7 @@ export default function SidebarPanel({ isOpen, onClose }: SidebarPanelProps) {
           <span className="text-white font-semibold">Menu</span>
           <button
             onClick={onClose}
-            className="text-white hover:text-red-400 transition"
+            className="text-white hover:text-red-400 transition cursor-pointer"
           >
             <FontAwesomeIcon icon={faXmark} className="w-5 h-5" />
           </button>
@@ -105,12 +105,10 @@ export default function SidebarPanel({ isOpen, onClose }: SidebarPanelProps) {
                   </p>
                 </div>
 
-                {/* 👇 Add this right here for top-right Profile button */}
-                <div className="absolute right-0 top-1/2 -translate-y-1/2
-">
+                <div className="absolute right-0 top-1/2 -translate-y-1/2">
                   <Link
                     href={`/profile/${user.username}`}
-                    className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition backdrop-blur-sm "
+                    className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-white/10 text-white hover:bg-white/20 transition backdrop-blur-sm"
                   >
                     <FontAwesomeIcon icon={faUser} className="w-4 h-4" />
                     Profile
@@ -124,14 +122,14 @@ export default function SidebarPanel({ isOpen, onClose }: SidebarPanelProps) {
                   href="/dashboard"
                   className="flex items-center gap-3 hover:text-[#FF2D00]"
                 >
-                  <FontAwesomeIcon icon={faGauge} className="w-4 h-4" />{" "}
+                  <FontAwesomeIcon icon={faGauge} className="w-4 h-4" />
                   Dashboard
                 </Link>
                 <Link
                   href="/wishlist"
                   className="flex items-center gap-3 hover:text-[#FF2D00]"
                 >
-                  <FontAwesomeIcon icon={faHeart} className="w-4 h-4" />{" "}
+                  <FontAwesomeIcon icon={faHeart} className="w-4 h-4" />
                   Wishlist
                 </Link>
                 <button
@@ -147,7 +145,7 @@ export default function SidebarPanel({ isOpen, onClose }: SidebarPanelProps) {
                       } else {
                         router.push("/");
                       }
-                    }, 1000); // 👈 optional delay to show the toast first
+                    }, 1000);
                   }}
                   className="flex items-center gap-3 text-red-400 hover:text-red-300"
                 >

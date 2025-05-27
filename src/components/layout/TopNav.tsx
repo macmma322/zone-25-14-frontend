@@ -48,8 +48,12 @@ export default function TopNav({
       <div className="flex items-center justify-between px-6 py-3 w-full">
         {/* LEFT */}
         <div className="flex items-center gap-6 w-1/3 min-w-[250px]">
-          <div className="text-lg font-display tracking-wide">Zone 25-14</div>
-
+          {/* Logo */}
+          <div className="text-lg font-display tracking-wide scale-140">
+            <Link href="/" className="flex items-center gap-2">
+              <Image src="/branding/logo.webp" alt="Zone 25-14 Logo" width={40} height={40}/>
+            </Link>
+          </div>
           {/* Niche Selector */}
           <div className="relative">
             <button

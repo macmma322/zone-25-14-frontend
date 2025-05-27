@@ -4,6 +4,7 @@
 // The User object includes properties such as user_id, username, email, phone, first_name, last_name, biography, profile_picture, points, next_rank, role_level_id, role, store_credit, and created_at.
 // The UserResponse object includes properties such as user, error, and success.
 // File: src/types/User.ts
+// File: src/types/User.ts
 
 export interface User {
   user_id: string;
@@ -16,7 +17,14 @@ export interface User {
   biography?: string;
   profile_picture?: string;
 
+  role_level_id: string;
+  role?: string; // readable name, e.g. "Founder"
   points: number;
+  store_credit: number;
+
+  birthday?: string; // from DB
+  birthday_reward_year?: number; // track if user already got birthday bonus
+
   next_rank:
     | {
         name: string;
@@ -26,14 +34,11 @@ export interface User {
     | "MAXED OUT"
     | "Staff — Max Tier";
 
-  role_level_id: string;
-  role?: string;
-  store_credit: number;
   created_at: string; // ISO format
 }
+
 export interface UserResponse {
   user: User;
-  token: string;
 }
 
 export type PublicProfile = {
