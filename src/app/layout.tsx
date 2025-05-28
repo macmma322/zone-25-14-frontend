@@ -10,7 +10,7 @@ import TabFocusHandler from "@/components/utils/TabFocusHandler"; // We'll creat
 
 config.autoAddCss = false;
 
-import Providers from "@/components/layout/Providers"; // We'll create this
+import Providers from "@/components/common/Providers"; // We'll create this
 
 export const metadata: Metadata = {
   title: {

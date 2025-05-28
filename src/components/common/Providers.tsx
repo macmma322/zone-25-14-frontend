@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/context/AuthContext";
 import { NicheProvider } from "@/context/NicheContext";
-import TopNav from "@/components/layout/TopNav";
-import SidebarPanel from "@/components/layout/SidebarPanel";
+import TopNav from "@/components/common/header/TopNav";
+import SidebarPanel from "@/components/common/header/SidebarPanel";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
