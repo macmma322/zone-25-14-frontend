@@ -1,128 +1,120 @@
-# 🖥️ Zone 25-14 Frontend
+<div id="top">
 
-This is the main frontend client for **Zone 25-14** —  
-a hybrid platform built for loyalty, rebellion, brotherhood, and limitless creativity.
+<!-- HEADER STYLE: CLASSIC -->
+<div align="center">
 
-The frontend acts as the **face of the empire**,  
-connecting users to the backend systems, loyalty engines, and the cultural core of Zone 25-14.
 
----
+# ZONE-25-14-FRONTEND
 
-## 🧠 About the Frontend
+<em>Empowering creativity through seamless user experiences.</em>
 
-Zone 25-14 is not just an e-commerce platform.  
-It’s a **movement**, **a lifestyle**, and **a rebellion**.
+<!-- BADGES -->
+<img src="https://img.shields.io/github/last-commit/macmma322/zone-25-14-frontend?style=flat&logo=git&logoColor=white&color=0080ff" alt="last-commit">
+<img src="https://img.shields.io/github/languages/top/macmma322/zone-25-14-frontend?style=flat&color=0080ff" alt="repo-top-language">
+<img src="https://img.shields.io/github/languages/count/macmma322/zone-25-14-frontend?style=flat&color=0080ff" alt="repo-language-count">
 
-The frontend is designed to be:
+<em>Built with the tools and technologies:</em>
 
-- Lightning-fast
-- Modern and clean
-- Highly scalable
-- Dark/light mode ready
-- Fully responsive across devices
-- Deeply connected to loyalty, roles, products, and user profiles
+<img src="https://img.shields.io/badge/JSON-000000.svg?style=flat&logo=JSON&logoColor=white" alt="JSON">
+<img src="https://img.shields.io/badge/Markdown-000000.svg?style=flat&logo=Markdown&logoColor=white" alt="Markdown">
+<img src="https://img.shields.io/badge/npm-CB3837.svg?style=flat&logo=npm&logoColor=white" alt="npm">
+<img src="https://img.shields.io/badge/Autoprefixer-DD3735.svg?style=flat&logo=Autoprefixer&logoColor=white" alt="Autoprefixer">
+<img src="https://img.shields.io/badge/PostCSS-DD3A0A.svg?style=flat&logo=PostCSS&logoColor=white" alt="PostCSS">
+<br>
+<img src="https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=flat&logo=JavaScript&logoColor=black" alt="JavaScript">
+<img src="https://img.shields.io/badge/React-61DAFB.svg?style=flat&logo=React&logoColor=black" alt="React">
+<img src="https://img.shields.io/badge/TypeScript-3178C6.svg?style=flat&logo=TypeScript&logoColor=white" alt="TypeScript">
+<img src="https://img.shields.io/badge/ESLint-4B32C3.svg?style=flat&logo=ESLint&logoColor=white" alt="ESLint">
+<img src="https://img.shields.io/badge/Axios-5A29E4.svg?style=flat&logo=Axios&logoColor=white" alt="Axios">
 
----
-
-## 🛠️ Technologies Used
-
-| Stack | Description |
-|:------|:------------|
-| Next.js 14+ (App Router) | Full-stack React Framework |
-| React 18+ | Core frontend library |
-| TailwindCSS v4 | Utility-first CSS framework |
-| TypeScript | Full typing support |
-| Axios | Backend API communication |
-| FontAwesome | Icon set integration |
-| Context API (Planned) | Global state management (auth, cart, etc.) |
+</div>
+<br>
 
 ---
 
-## 📋 Project Structure
+## Table of Contents
 
-```bash
-zone-25-14-frontend/
-├── public/           # Static assets (images, icons, fonts)
-├── src/
-│   ├── app/          # Pages (Next.js App Router structure)
-│   │   ├── login/    # Login page
-│   │   ├── register/ # Register page
-│   │   ├── profile/  # Profile page
-│   │   ├── products/ # Products listing page
-│   │   ├── layout.tsx # Global layout
-│   │   ├── globals.css # Global Tailwind + Custom CSS
-│   ├── components/   # Shared UI components (Button, Input, Card, etc.) (Planned)
-│   ├── utils/        # API functions (loginUser, registerUser, fetchProducts, etc.)
-│   ├── lib/          # FontAwesome config and utilities
-├── .env.local        # Environment variables
-├── tailwind.config.ts# Tailwind configuration
-├── tsconfig.json     # TypeScript configuration
-├── package.json      # Project metadata and dependencies
+- [Overview](#overview)
+- [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+    - [Usage](#usage)
+    - [Testing](#testing)
 
 ---
 
-## 🛡️ Key Features Implemented
+## Overview
 
-    Feature                                     | Status
-    Global TailwindCSS Styling                  | ✅
-    FontAwesome Icon System                     | ✅
-    Register / Login / Profile Pages            | ✅
-    Product Listing Page                        | ✅
-    JWT Token Storage with Axios Interceptors   | ✅
-    Dark Theme Base                             | ✅
+Zone 25-14 Frontend is a modern web application designed to connect users with a vibrant platform focused on loyalty and creativity. 
 
----
+**Why zone-25-14-frontend?**
 
-## 📦 How to Run Locally
+This project enhances user engagement through innovative design and robust functionality. The core features include:
 
-1.Clone the repository:
-    -git clone https://github.com/YOUR-USERNAME/zone-25-14-frontend.git
-
-2.Install dependencies:
-    -npm install
-
-3.Create a .env.local file:
-    -NEXT_PUBLIC_API_URL=http://localhost:5000/api
-    ✅ (Point to your backend server)
-
-4.Start development server:
-    -npm run dev
-    ✅ Frontend will run at:
-    http://localhost:3000/
-    
----
-
-## 🎨 Current Pages Available
-
-Page            | Description
-/               | Landing Page
-/login          | User Login Page
-/register       | User Registration Page
-/profile        | User Profile Information
-/products       | Explore Products Page
+- 🎨 **Responsive Design:** Simplifies styling with Tailwind CSS for a cohesive user experience across devices.
+- 🔒 **Centralized Authentication:** Streamlines user login, registration, and session management for enhanced security.
+- ⚙️ **TypeScript Integration:** Ensures code quality and maintainability through type safety and structured data handling.
+- 📡 **Dynamic API Utilities:** Facilitates seamless communication with backend services for user and product management.
+- ✨ **Interactive UI Components:** Engages users with visually appealing elements like badges, buttons, and niche cards.
+- ⚠️ **Error Handling Utilities:** Improves user experience by providing clear feedback during errors and enhancing overall reliability.
 
 ---
 
-## 🔥 Future Planned Features
+## Getting Started
 
-    -Cart System (Add to Cart, Checkout)
-    -Wishlist System (Favorites)
-    -Order History Page
-    -Admin Dashboard
-    -Loyalty Progression UI (Levels, Badges)
-    -Friends and Messaging System
-    -Public Profiles and Public Wishlists
-    -Theme Switching (Light/Dark modes toggle)
-    -Animated Background Effects (Grid, Lights, Glitch)
+### Prerequisites
+
+This project requires the following dependencies:
+
+- **Programming Language:** TypeScript
+- **Package Manager:** Npm
+
+### Installation
+
+Build zone-25-14-frontend from the source and intsall dependencies:
+
+1. **Clone the repository:**
+
+    ```sh
+    ❯ git clone https://github.com/macmma322/zone-25-14-frontend
+    ```
+
+2. **Navigate to the project directory:**
+
+    ```sh
+    ❯ cd zone-25-14-frontend
+    ```
+
+3. **Install the dependencies:**
+
+**Using [npm](https://www.npmjs.com/):**
+
+```sh
+❯ npm install
+```
+
+### Usage
+
+Run the project with:
+
+**Using [npm](https://www.npmjs.com/):**
+
+```sh
+npm start
+```
+
+### Testing
+
+Zone-25-14-frontend uses the {__test_framework__} test framework. Run the test suite with:
+
+**Using [npm](https://www.npmjs.com/):**
+
+```sh
+npm test
+```
 
 ---
 
-## 🛡️ Frontend Design Philosophy
-
-    -Minimalistic but powerful
-    -Built for speed and scale
-    -Deep loyalty and personalization
-    -Rebellion in aesthetics, but discipline in structure
-    -Designed for dreamers, builders, and outsiders
+<div align="left"><a href="#top">⬆ Return</a></div>
 
 ---
