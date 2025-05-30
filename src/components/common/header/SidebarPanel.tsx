@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-hot-toast";
+import { faComments } from "@fortawesome/free-solid-svg-icons";
 import {
   faXmark,
   faRightFromBracket,
@@ -132,6 +133,14 @@ export default function SidebarPanel({ isOpen, onClose }: SidebarPanelProps) {
                   <FontAwesomeIcon icon={faHeart} className="w-4 h-4" />
                   Wishlist
                 </Link>
+                <Link
+                  href="/chat"
+                  className="flex items-center gap-3 hover:text-[#FF2D00]"
+                >
+                  <FontAwesomeIcon icon={faComments} className="w-4 h-4" />
+                  Messages
+                </Link>
+
                 <button
                   onClick={() => {
                     logout();

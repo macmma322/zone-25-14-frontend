@@ -1,10 +1,14 @@
 // File: src/app/profile/[username]/page.tsx
+
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { fetchUserByUsername } from "@/utils/api/userApi";
 import type { User, PublicProfile } from "@/types/User";
 import { rolesMeta } from "@/types/Role";
+import RelationshipActions from "@/components/profile/RelationshipActions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import MessageButton from "@/components/profile/MessageButton";
+
 import {
   faUser,
   faShieldHalved,
@@ -71,6 +75,46 @@ export default async function Page({
     return notFound();
   }
 
+  type RelationshipStatus = {
+    targetId: string;
+    areFriends: boolean;
+    hasPendingFriendRequest: boolean;
+    theySentRequest: boolean;
+    requestId: string | null;
+    canMessage: boolean;
+  };
+
+  let relationship: RelationshipStatus | null = null;
+  console.log("RELATIONSHIP from server:", relationship);
+  if (!isCurrentUser && authToken) {
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/users/relationship/${username}`,
+        {
+          headers: {
+            Cookie: `authToken=${authToken}`,
+          },
+          cache: "no-store",
+        }
+      );
+
+      console.log("Relationship fetch status:", res.status);
+
+      if (res.ok) {
+        relationship = await res.json();
+      } else {
+        const text = await res.text();
+        console.warn(
+          "Relationship fetch failed with status:",
+          res.status,
+          text
+        );
+      }
+    } catch (err) {
+      console.error("Relationship fetch threw error:", err);
+    }
+  }
+
   // Determine role name & metadata
   const roleName =
     "role" in user
@@ -88,6 +132,17 @@ export default async function Page({
   // Border color for avatar depending on role
   const borderColor =
     roleName === "Founder" ? "border-yellow-400" : "border-white/20";
+  console.log("Loaded user profile:", user);
+
+  const targetUserId =
+    "user_id" in user
+      ? String(user.user_id)
+      : "id" in user
+      ? String(user.id)
+      : "";
+  if (!targetUserId) {
+    console.error("Missing target user ID for messaging.");
+  }
 
   return (
     <div
@@ -159,6 +214,12 @@ export default async function Page({
               Edit Profile
             </button>
           )}
+          {!isCurrentUser && relationship && (
+            <RelationshipActions
+              username={username}
+              relationship={relationship}
+            />
+          )}
         </div>
 
         {user.biography && (
@@ -226,9 +287,8 @@ export default async function Page({
           <button className="px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 transition text-sm font-medium">
             Follow
           </button>
-          <button className="px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 transition text-sm font-medium">
-            Message
-          </button>
+
+          <MessageButton targetUserId={targetUserId} />
         </div>
       </div>
     </div>
