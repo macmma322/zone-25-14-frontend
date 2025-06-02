@@ -10,7 +10,11 @@ type Friend = {
   conversation_id: string;
 };
 
-export default function FriendsSidebar({ onSelect }: { onSelect: (id: string) => void }) {
+export default function FriendsSidebar({
+  onSelect,
+}: {
+  onSelect: (id: string) => void;
+}) {
   const [friends, setFriends] = useState<Friend[]>([]);
 
   useEffect(() => {
@@ -28,7 +32,9 @@ export default function FriendsSidebar({ onSelect }: { onSelect: (id: string) =>
   return (
     <div className="p-4 space-y-2">
       <h2 className="text-white text-lg font-semibold mb-2">Friends</h2>
-      {friends.length === 0 && <p className="text-white/40 text-sm">No active chats yet.</p>}
+      {friends.length === 0 && (
+        <p className="text-white/40 text-sm">No active chats yet.</p>
+      )}
       {friends.map((f) => (
         <button
           key={f.user_id}

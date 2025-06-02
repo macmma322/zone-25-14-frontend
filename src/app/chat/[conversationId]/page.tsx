@@ -1,4 +1,4 @@
-// app/chat/page.tsx
+// app/chat/[conversationId]/page.tsx
 "use client";
 
 import { useState } from "react";

@@ -75,8 +75,12 @@
 
   --White: hsl(0, 0%, 100%);
   /* #FFFFFF White */
+  --Carrara-White: hsl(0, 0%, 97%);
+  /* #F8F8F8 Carrara White */
   --Cultured-White: hsl(0, 0%, 93%);
   /* #EEEEEE Cultured White */
+  --Lily-White: hsl(202, 20%, 92%);
+  /* #E7ECEF Lily White */
   --Azureish-White: hsl(209, 56%, 92%);
   /* #D9E6F2 Azureish White */
   --Chinese-White: hsl(143, 39%, 87%);
@@ -89,6 +93,12 @@
   /* #F7F7F7 Foggy White */
   --Alabaster: hsl(30, 16%, 93%);
   /* #E6E6D6 Alabaster */
+  --Seashell-White: hsl(25, 100%, 97%);
+  /* #FFF5EE Seashell White */
+  --Azure-White: hsl(180, 100%, 97%);
+  /* #F0FFFF Azure White */
+  --Alice-Blue: hsl(208, 100%, 97%);
+  /* #F0F8FF Alice Blue */
 
   /*---------------------CREAM/BEIGE COLORS COLORS---------------------*/
 
@@ -697,5 +707,22 @@ body::-webkit-scrollbar,
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@layer utilities {
+  .animate-fade-in-out {
+    animation: fadeInOut 0.3s ease-in-out;
+  }
+
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }

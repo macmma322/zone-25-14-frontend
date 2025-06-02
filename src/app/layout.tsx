@@ -7,6 +7,7 @@ import "./globals.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import TabFocusHandler from "@/components/utils/TabFocusHandler"; // We'll create this
+// import { Toaster } from "react-hot-toast";
 
 config.autoAddCss = false;
 
@@ -58,6 +59,8 @@ export default function RootLayout({
       >
         <TabFocusHandler />
         <Providers>{children}</Providers>
+        {/* <Toaster position="bottom-right" toastOptions={{ duration: 4000 }} /> */}
+        
       </body>
     </html>
   );
