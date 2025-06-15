@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { registerUser } from "@/utils/api/apiFunctions";
+import { registerUser } from "@/utils/api/userApi";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { isAxiosError } from "axios";

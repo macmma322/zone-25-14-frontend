@@ -726,3 +726,20 @@ body::-webkit-scrollbar,
     }
   }
 }
+
+@keyframes glow-ring {
+  0% {
+    box-shadow: 0 0 0px #3b82f6;
+  }
+  50% {
+    box-shadow: 0 0 12px #3b82f6;
+  }
+  100% {
+    box-shadow: 0 0 0px #3b82f6;
+  }
+}
+
+.animate-glow-ring {
+  animation: glow-ring 1.5s ease-in-out;
+  border-radius: 0.5rem;
+}

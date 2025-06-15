@@ -1,96 +1,219 @@
-// zone-25-14-frontend/src/components/chat/ChatBox.tsx
+// File: components/chat/ChatBox.tsx
+
 "use client";
-
-import { useEffect, useState, useRef } from "react";
-import { getMessages } from "@/utils/api/messagingApi";
+import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useNiche } from "@/context/NicheContext";
-import { nicheThemes } from "@/data/nicheThemes";
-import { io, Socket } from "socket.io-client";
-
-const socket: Socket = io("http://localhost:5000", { withCredentials: true });
+import socket from "@/utils/socket";
+import { Message, Reaction } from "@/types/Message";
+import {
+  getMessages,
+  sendMessage,
+  toggleReaction,
+} from "@/utils/api/messagingApi";
+import MessageBubble from "./MessageBubble";
+import ReplyPreview from "./ReplyPreview";
+import EmojiPicker from "./EmojiPicker";
+import { SmilePlus } from "lucide-react";
+import toast from "react-hot-toast";
 
 type Props = {
   conversationId: string;
 };
 
-type Message = {
-  message_id: string;
-  username: string;
-  content: string;
-  sent_at?: string;
-  read_at?: string;
-};
-
 export default function ChatBox({ conversationId }: Props) {
   const { user } = useAuth();
-  const { currentNiche } = useNiche();
-  const theme = nicheThemes[currentNiche];
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const messageRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const [messages, setMessages] = useState<Message[]>([]);
+  const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [text, setText] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-  const bottomRef = useRef<HTMLDivElement | null>(null);
-  const typingTimeout = useRef<NodeJS.Timeout | null>(null);
+  const [replyTo, setReplyTo] = useState<Message | null>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  const scrollToMessage = (id: string) => {
+    const el = document.getElementById(`message-${id}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.add("ring-2", "ring-blue-500");
+      setTimeout(() => el.classList.remove("ring-2", "ring-blue-500"), 1500);
+    }
+  };
+
+  const setReactionsForMessage = (
+    messageId: string,
+    updater: React.SetStateAction<Reaction[]>
+  ) => {
+    setMessages((prev) =>
+      prev.map((msg) =>
+        msg.message_id === messageId
+          ? {
+              ...msg,
+              reactions:
+                typeof updater === "function"
+                  ? (updater as (prev: Reaction[]) => Reaction[])(
+                      msg.reactions || []
+                    )
+                  : updater,
+            }
+          : msg
+      )
+    );
+  };
+
+  const handleReact = async (messageId: string, emoji: string) => {
+    if (!user || !socket.connected) {
+      toast.error("⚠️ Cannot react — not connected.");
+      return;
+    }
+
+    const message = messages.find((m) => m.message_id === messageId);
+    if (!message) return;
+
+    const existing = message.reactions?.find((r) => r.user_id === user.user_id);
+
+    let payload = emoji;
+    if (existing) {
+      payload = existing.reaction === emoji ? `-${emoji}` : emoji;
+    }
+
+    try {
+      await toggleReaction(messageId, payload);
+    } catch (err) {
+      console.error("React failed", err);
+      toast.error("Reaction failed.");
+    }
+  };
+
+  const isNearBottom = () => {
+    const container = containerRef.current;
+    if (!container) return false;
+    const threshold = 150;
+    const distance =
+      container.scrollHeight - container.scrollTop - container.clientHeight;
+    return distance < threshold;
+  };
+
+  const deduplicateMessages = (msgs: Message[]) => {
+    const map = new Map<string, Message>();
+    for (const m of msgs) map.set(m.message_id, m);
+    return Array.from(map.values());
+  };
 
   useEffect(() => {
-    socket.emit("joinRoom", conversationId);
-
-    const fetchInitial = async () => {
+    const load = async () => {
       setLoading(true);
       try {
         const res = await getMessages(conversationId, undefined, 30);
-        setMessages(res.messages.reverse());
+        setMessages(deduplicateMessages(res.messages.reverse()));
         setHasMore(res.hasMore);
-        setTimeout(() => scrollToBottom(), 100);
+        requestAnimationFrame(() =>
+          scrollRef.current?.scrollIntoView({ behavior: "auto" })
+        );
       } catch (err) {
-        console.error("Failed to load messages", err);
+        console.error("Initial fetch failed", err);
       } finally {
         setLoading(false);
       }
     };
+    load();
+  }, [conversationId]);
 
-    fetchInitial();
+  useEffect(() => {
+    socket.emit("joinRoom", conversationId);
 
-    socket.on("receiveMessage", (msg: Message) => {
-      setMessages((prev) => [...prev, msg]);
-      setTimeout(() => scrollToBottom(), 100);
-    });
-
-    socket.on("showTyping", (typingUser: string) => {
-      if (typingUser !== user?.username) {
-        setIsTyping(true);
-        if (typingTimeout.current) clearTimeout(typingTimeout.current);
-        typingTimeout.current = setTimeout(() => setIsTyping(false), 1500);
+    const handleReceiveMessage = (msg: Message) => {
+      setMessages((prev) => {
+        if (prev.some((m) => m.message_id === msg.message_id)) return prev;
+        return deduplicateMessages([...prev, msg]);
+      });
+      if (isNearBottom()) {
+        requestAnimationFrame(() => {
+          const last = messageRefs.current[msg.message_id];
+          last?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
       }
-    });
+    };
+
+    const handleReactionUpdate = (data: {
+      message_id: string;
+      user_id: string;
+      reaction: string;
+      username: string;
+      type: "add" | "remove";
+    }) => {
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg.message_id !== data.message_id) return msg;
+
+          const prevReactions = msg.reactions || [];
+          let updated: Reaction[] = [...prevReactions];
+
+          if (data.type === "remove") {
+            updated = updated.filter(
+              (r) =>
+                !(r.user_id === data.user_id && r.reaction === data.reaction)
+            );
+          } else {
+            // Remove previous reaction by user if exists
+            updated = updated.filter((r) => r.user_id !== data.user_id);
+            updated.push({
+              reaction_id: `live-${Date.now()}`,
+              message_id: data.message_id,
+              user_id: data.user_id,
+              username: data.username,
+              reaction: data.reaction,
+              reacted_at: new Date().toISOString(),
+            });
+          }
+
+          return { ...msg, reactions: updated };
+        })
+      );
+    };
+
+    const handleReconnect = async () => {
+      try {
+        const res = await getMessages(conversationId, undefined, 30);
+        setMessages(deduplicateMessages(res.messages.reverse()));
+      } catch (err) {
+        console.error("❌ Failed to reload messages after reconnect", err);
+      }
+    };
+
+    socket.on("receiveMessage", handleReceiveMessage);
+    socket.on("reactionUpdated", handleReactionUpdate);
+    socket.on("connect", handleReconnect);
 
     return () => {
-      socket.off("receiveMessage");
-      socket.off("showTyping");
+      socket.off("receiveMessage", handleReceiveMessage);
+      socket.off("reactionUpdated", handleReactionUpdate);
+      socket.off("connect", handleReconnect);
     };
-  }, [conversationId, user?.username]);
-
-  const scrollToBottom = () => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  }, [conversationId]);
 
   const handleScroll = async () => {
-    const container = scrollContainerRef.current;
-    if (!container || container.scrollTop > 100 || loading || !hasMore) return;
+    const container = containerRef.current;
+    if (!container || container.scrollTop > 150 || loading || !hasMore) return;
+
+    const firstId = messages[0]?.message_id;
+    const prevHeight = container.scrollHeight;
 
     setLoading(true);
-    const firstMessageId = messages[0]?.message_id;
-
     try {
-      const res = await getMessages(conversationId, firstMessageId, 30);
-      if (res.messages.length === 0) setHasMore(false);
-      setMessages((prev) => [...res.messages.reverse(), ...prev]);
+      const res = await getMessages(conversationId, firstId, 30);
+      setMessages((prev) =>
+        deduplicateMessages([...res.messages.reverse(), ...prev])
+      );
+      setHasMore(res.hasMore);
+      requestAnimationFrame(() => {
+        const newHeight = container.scrollHeight;
+        container.scrollTop = newHeight - prevHeight;
+      });
     } catch (err) {
-      console.error("Failed to load older messages", err);
+      console.error("Pagination failed", err);
     } finally {
       setLoading(false);
     }
@@ -99,95 +222,90 @@ export default function ChatBox({ conversationId }: Props) {
   const handleSend = async () => {
     if (!text.trim()) return;
     try {
-      await fetch("/api/message", {
-        method: "POST",
-        body: JSON.stringify({ conversationId, content: text }),
-      });
+      const sent = await sendMessage(conversationId, text, replyTo?.message_id);
+      socket.emit("sendMessage", sent);
       setText("");
+      setReplyTo(null);
     } catch (err) {
-      console.error("Send failed:", err);
+      console.error("Send failed", err);
     }
   };
 
-  const handleTyping = () => {
-    socket.emit("typing", { conversationId, username: user?.username });
-  };
+  if (!user) {
+    return <div className="text-white p-4">🔒 Loading chat...</div>;
+  }
 
   return (
-    <div className="flex flex-col h-full bg-black text-white relative">
+    <div className="flex flex-col h-full bg-zinc-950 text-white relative">
       <div
-        ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto p-4 space-y-3"
+        ref={containerRef}
         onScroll={handleScroll}
+        className="flex-1 overflow-y-auto px-6 py-4"
       >
-        {loading && (
-          <div className="text-center text-xs text-white/40 py-2 animate-pulse">
-            Loading messages...
-          </div>
-        )}
+        {messages.map((msg, i, arr) => {
+          const prev = arr[i - 1];
+          const isMine = msg.sender_id === user.user_id;
+          const showAvatar = !prev || prev.sender_id !== msg.sender_id;
+          const showName = showAvatar;
 
-        {messages.map((msg) => {
-          const isMine = msg.username === user?.username;
           return (
-            <div
-              key={msg.message_id}
-              className={`flex ${isMine ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`px-4 py-2 rounded-xl max-w-[80%] whitespace-pre-wrap break-words transition-all duration-300 ${
-                  isMine ? "text-white" : theme.text
-                }`}
-                style={{
-                  backgroundColor: isMine
-                    ? theme.accent
-                    : "var(--Charcoal-Gray)",
+            <div key={msg.message_id} className={showAvatar ? "" : "ml-[44px]"}>
+              <MessageBubble
+                ref={(el) => {
+                  messageRefs.current[msg.message_id] = el;
                 }}
-              >
-                <p className="text-sm font-semibold text-white/60">
-                  {msg.username}
-                </p>
-                <p>{msg.content}</p>
-                <p className="text-xs text-white/40 mt-1">
-                  {new Date(msg.sent_at!).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
-              </div>
+                message={msg}
+                isMine={isMine}
+                userId={user.user_id}
+                showAvatar={showAvatar}
+                showName={showName}
+                onReply={setReplyTo}
+                scrollToMessage={scrollToMessage}
+                setReactionsForMessage={setReactionsForMessage}
+                onReact={handleReact}
+              />
             </div>
           );
         })}
-
-        {isTyping && (
-          <div className="text-sm text-white/40 px-4">Typing...</div>
-        )}
-
-        <div ref={bottomRef} />
+        <div ref={scrollRef} />
       </div>
 
-      <div className="flex border-t border-white/10 p-2 bg-zinc-950">
+      <div className="px-4 pt-2">
+        <ReplyPreview replyTo={replyTo} onCancel={() => setReplyTo(null)} />
+      </div>
+
+      <div className="relative flex items-center border-t border-white/10 p-4 bg-zinc-950">
         <input
-          type="text"
           value={text}
-          onChange={(e) => {
-            setText(e.target.value);
-            handleTyping();
-          }}
+          onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               handleSend();
             }
           }}
-          className="flex-1 bg-transparent text-white px-3 py-2 outline-none placeholder-white/40"
           placeholder="Type your message..."
+          className="flex-1 bg-transparent text-white px-3 py-2 outline-none placeholder-white/40"
         />
+        <button
+          onClick={() => setShowEmojiPicker((prev) => !prev)}
+          className="mr-2 text-white hover:text-blue-500"
+          title="Open emoji picker"
+        >
+          <SmilePlus />
+        </button>
         <button
           onClick={handleSend}
           className="ml-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl text-white transition-all duration-300"
         >
           Send
         </button>
+
+        <EmojiPicker
+          open={showEmojiPicker}
+          onClose={() => setShowEmojiPicker(false)}
+          onSelect={(emoji) => setText((prev) => prev + emoji)}
+        />
       </div>
     </div>
   );
