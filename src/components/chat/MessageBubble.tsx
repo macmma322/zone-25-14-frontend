@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import type { Message, Reaction } from "@/types/Message";
 import Tooltip from "../ui/Tooltip";
 import EmojiReaction from "./EmojiReaction";
+import { useAuth } from "@/context/AuthContext";
 
 type Props = {
   message: Message;
@@ -28,7 +29,6 @@ const MessageBubble = forwardRef<HTMLDivElement, Props>(function MessageBubble(
   {
     message,
     isMine,
-    userId,
     showAvatar,
     showName,
     onReply,
@@ -40,6 +40,7 @@ const MessageBubble = forwardRef<HTMLDivElement, Props>(function MessageBubble(
   },
   ref
 ) {
+  const { user } = useAuth();
   const [hovering, setHovering] = useState(false);
 
   return (
@@ -141,7 +142,7 @@ const MessageBubble = forwardRef<HTMLDivElement, Props>(function MessageBubble(
                 );
                 const usernames = emojiReactions.map((r) => r.username);
                 const userReacted = emojiReactions.some(
-                  (r) => r.user_id === userId
+                  (r) => r.username === user?.username
                 );
 
                 return (
