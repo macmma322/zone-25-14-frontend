@@ -1,3 +1,4 @@
+// src/components/notifications/NotificationBell.tsx
 import React, { useState, useRef, useEffect } from "react";
 import { Bell } from "lucide-react";
 import { useNotifications } from "@/context/NotificationContext"; // Import the hook
@@ -18,7 +19,6 @@ const NotificationBell = () => {
 
   useEffect(() => {
     fetchNotifications(); // Fetch notifications initially
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
