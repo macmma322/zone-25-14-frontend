@@ -5,7 +5,12 @@
 // such as chat components.
 // zone-25-14-frontend/src/utils/socket.ts
 import { io, Socket } from "socket.io-client";
-const URL = "http://localhost:5000"; // or your backend server
-const socket: Socket = io(URL, { withCredentials: true });
+
+const URL = "http://localhost:5000";
+
+const socket: Socket = io(URL, {
+  withCredentials: true,
+    transports: ["websocket"],
+});
 
 export default socket;

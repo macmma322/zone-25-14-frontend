@@ -63,7 +63,7 @@ export default function Tooltip({ content, children, className = "" }: Props) {
             left: x ?? 0,
             zIndex: 9999,
           }}
-          className="bg-zinc-900 text-white text-xs rounded px-3 py-2 shadow-lg max-w-xs text-center break-words whitespace-pre-wrap"
+          className="flex items-center justify-center px-3 py-1 text-sm text-white bg-zinc-900 rounded shadow-lg border border-zinc-700 transition-opacity duration-200"
         >
           {content}
         </div>

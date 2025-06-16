@@ -1,12 +1,19 @@
 import React, { forwardRef, useState } from "react";
 import { motion } from "framer-motion";
-import { UserCircle2, SmilePlus, Trash2, Pencil } from "lucide-react";
+import {
+  UserCircle2,
+  SmilePlus,
+  Trash2,
+  Pencil,
+  CornerUpLeft,
+} from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Message, Reaction } from "@/types/Message";
 import Tooltip from "../ui/Tooltip";
 import EmojiReaction from "./EmojiReaction";
 import { useAuth } from "@/context/AuthContext";
+import Image from "next/image";
 
 type Props = {
   message: Message;
@@ -164,11 +171,13 @@ const MessageBubble = forwardRef<HTMLDivElement, Props>(function MessageBubble(
                       <div className="flex -space-x-2 ml-1">
                         {emojiReactions.slice(0, 3).map((r, i) =>
                           r.avatar ? (
-                            <img
+                            <Image
                               key={i}
                               src={r.avatar}
                               alt={r.username}
-                              className="w-5 h-5 rounded-full border-2 border-zinc-900"
+                              width={20}
+                              height={20}
+                              className="rounded-full border-2 border-zinc-900"
                             />
                           ) : (
                             <div
@@ -190,14 +199,15 @@ const MessageBubble = forwardRef<HTMLDivElement, Props>(function MessageBubble(
 
         {/* 🧩 Hover Buttons */}
         {hovering && (
-          <div className="absolute right-[-70] flex flex-row gap-2 text-white/60 bg-zinc-800 px-2 py-1 rounded-md shadow-md z-10">
+          <div className="absolute right-[-70px]  top-1/2 -translate-y-1/2 flex flex-row gap-2 text-white/60 bg-zinc-800 px-2 py-1 rounded-md shadow-md z-10">
             <button
               onClick={() => onReply(message)}
               className="hover:text-white"
               title="Reply"
             >
-              ↩️
+              <CornerUpLeft size={18} />
             </button>
+
             <EmojiReaction
               messageId={message.message_id}
               reactions={message.reactions || []}

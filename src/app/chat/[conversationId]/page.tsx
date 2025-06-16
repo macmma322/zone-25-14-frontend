@@ -15,7 +15,11 @@ export default function ChatPage() {
     <div className="flex h-screen bg-black text-white pt-19">
       {/* Left: Friends/Conversations */}
       <div className="w-[320px] border-r border-white/10 bg-zinc-900 overflow-y-auto">
-        <FriendsSidebar onSelect={setSelectedConversationId} />
+<FriendsSidebar
+  activeConversationId={selectedConversationId ?? ""}
+  onSelect={(id) => setSelectedConversationId(id)}
+/>
+
       </div>
 
       {/* Right: Chat Box */}

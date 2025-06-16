@@ -140,9 +140,6 @@ export default async function Page({
       : "id" in user
       ? String(user.id)
       : "";
-  if (!targetUserId) {
-    console.error("Missing target user ID for messaging.");
-  }
 
   return (
     <div
@@ -288,7 +285,9 @@ export default async function Page({
             Follow
           </button>
 
-          <MessageButton targetUserId={targetUserId} />
+          {!isCurrentUser && targetUserId && (
+            <MessageButton targetUserId={targetUserId} />
+          )}
         </div>
       </div>
     </div>
