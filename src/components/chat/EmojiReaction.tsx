@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { Reaction } from "@/types/Message";
 import { toggleReaction } from "@/utils/api/messagingApi";
 import { useAuth } from "@/context/AuthContext";
-import socket from "@/utils/socket";
+import { getSocket } from "@/utils/socket";
 
 const EMOJIS = ["🔥", "❤️", "😄", "💀", "👏", "😭", "👍", "👎", "🥹", "😡"];
 
@@ -27,8 +27,22 @@ export default function EmojiReaction({
   const { user } = useAuth();
 
   const handleToggle = async (emoji: string) => {
-    if (!user || !socket.connected) {
-      toast.error("⚠️ Cannot react — not connected.");
+    if (!user) {
+      toast.error("⚠️ Login required to react.");
+      return;
+    }
+
+    let socket;
+    try {
+      socket = getSocket();
+    } catch (err) {
+      console.warn("❌ Socket not ready:", err);
+      toast.error("⚠️ Socket not connected.");
+      return;
+    }
+
+    if (!socket.connected) {
+      toast.error("⚠️ Socket disconnected.");
       return;
     }
 
@@ -38,13 +52,10 @@ export default function EmojiReaction({
 
     try {
       await toggleReaction(messageId, payload);
-
-      // ✅ Let the socket handle the UI update, don't manually mutate state
       toast.success(
         isSameEmoji ? `❌ Removed ${emoji}` : `❤️ Reacted with ${emoji}`,
         { duration: 1000 }
       );
-
       setOpen(false);
     } catch (err) {
       console.error("Emoji toggle failed:", err);

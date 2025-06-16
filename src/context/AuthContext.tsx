@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { User } from "@/types/User";
 import { fetchUserProfile, loginUser, logoutApi } from "@/utils/api/userApi";
 import axios from "axios";
+import { initSocket, disconnectSocket } from "@/utils/socket";
 
 interface AuthContextType {
   user: User | null;
@@ -32,10 +33,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const loadUser = async () => {
       setLoading(true);
       try {
-        const userData = await fetchUserProfile(); // Uses cookie automatically
-        setUser(userData);
+        const userData = await fetchUserProfile();
+        setUser(userData); // 👈 This triggers the socket effect below
       } catch (error: unknown) {
-        // Handle 401 explicitly and reset user state to null
         if (axios.isAxiosError(error) && error.response?.status === 401) {
           setUser(null);
         } else {
@@ -46,15 +46,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     };
 
-    loadUser();
+    loadUser(); // ⬅️ only runs once on initial mount
   }, []);
+
+  // This watches the user and reacts to login/logout
+  useEffect(() => {
+    if (user) {
+      try {
+        initSocket(user); // 🔌 Pass the user to identify socket
+      } catch (err) {
+        console.error("❌ Failed to initialize socket:", err);
+      }
+    } else {
+      disconnectSocket(); // 🔌 Clean up on logout or expired session
+    }
+  }, [user]);
 
   // Login function - calls loginUser, updates user state
   const login = async (username: string, password: string) => {
     setLoading(true);
     try {
-      await loginUser(username, password, setUser);
-      // loginUser internally sets user with setUser callback
+      await loginUser(username, password, (userData) => {
+        setUser(userData);
+        if (userData) {
+          initSocket(userData);
+        }
+      });
     } catch (error) {
       setUser(null);
       throw error; // Let caller handle errors
@@ -67,8 +84,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = async () => {
     setLoading(true);
     try {
-      await logoutApi(); // clears cookie on server
+      await logoutApi();
       setUser(null);
+      disconnectSocket(); // 🧼 disconnect cleanly
     } catch (error) {
       // Optionally handle logout error
       console.error("Logout failed:", error);

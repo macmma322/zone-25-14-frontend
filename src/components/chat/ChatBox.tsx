@@ -3,7 +3,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import socket from "@/utils/socket";
+import { getSocket } from "@/utils/socket";
 import { Message, Reaction } from "@/types/Message";
 import { getMessages, sendMessage } from "@/utils/api/messagingApi";
 import { toggleReaction } from "@/utils/api/messagingApi";
@@ -20,6 +20,7 @@ type Props = {
 
 export default function ChatBox({ conversationId }: Props) {
   const { user } = useAuth();
+  const socket = getSocket();
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const messageRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -139,7 +140,9 @@ export default function ChatBox({ conversationId }: Props) {
     if (!text.trim()) return;
     try {
       const sent = await sendMessage(conversationId, text, replyTo?.message_id);
-      socket.emit("sendMessage", sent);
+      if (socket?.connected) {
+        socket.emit("sendMessage", sent);
+      }
       setText("");
       setReplyTo(null);
     } catch (err) {
@@ -329,22 +332,21 @@ export default function ChatBox({ conversationId }: Props) {
   }, []);
 
   // Tell the parent page that this conversation just had activity
-useEffect(() => {
-  if (messages.length === 0) return;
+  useEffect(() => {
+    if (messages.length === 0) return;
 
-  const last = messages[messages.length - 1];
+    const last = messages[messages.length - 1];
 
-  const event = new CustomEvent("message-activity", {
-    detail: {
-      conversationId,
-      timestamp: last.sent_at || new Date().toISOString(),
-    },
-  });
+    const event = new CustomEvent("message-activity", {
+      detail: {
+        conversationId,
+        timestamp: last.sent_at || new Date().toISOString(),
+      },
+    });
 
-  window.dispatchEvent(event);
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, [messages.length]);
-
+    window.dispatchEvent(event);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages.length]);
 
   if (!user) {
     return <div className="text-white p-4">🔒 Loading chat...</div>;
@@ -370,7 +372,7 @@ useEffect(() => {
             <React.Fragment key={msg.message_id}>
               {showDateSeparator && (
                 <div className="text-white/40 text-xs text-center my-4 select-none">
-                <hr /> {getDateLabel(msg.sent_at)} <hr />
+                  <hr /> {getDateLabel(msg.sent_at)} <hr />
                 </div>
               )}
               <div className={showAvatar ? "" : "ml-[44px]"}>

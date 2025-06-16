@@ -5,7 +5,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useNiche } from "@/context/NicheContext";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  faBell,
   faMagnifyingGlass,
   faAngleDown,
   faUser,
@@ -14,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import Image from "next/image";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import NotificationBell from "@/components/notifications/NotificationBell";
 
 const nicheOptions = [
   { key: "zone", label: "Zone 25-14" },
@@ -51,7 +51,12 @@ export default function TopNav({
           {/* Logo */}
           <div className="text-lg font-display tracking-wide scale-140">
             <Link href="/" className="flex items-center gap-2">
-              <Image src="/branding/logo.webp" alt="Zone 25-14 Logo" width={40} height={40}/>
+              <Image
+                src="/branding/logo.webp"
+                alt="Zone 25-14 Logo"
+                width={40}
+                height={40}
+              />
             </Link>
           </div>
           {/* Niche Selector */}
@@ -132,7 +137,7 @@ export default function TopNav({
                     ease: [0.17, 0.67, 0.83, 0.67],
                   }}
                   style={{
-                    transformOrigin: "calc(100% + 17px) ",
+                    transformOrigin: "calc(100% + 17px)",
                   }}
                   className="absolute bg-white/10 backdrop-blur-md border border-white/20 text-white placeholder:text-white/60 right-7 top-1/2 -translate-y-1/2 top-0 px-3 py-1 rounded text-sm w-48 shadow-md"
                   placeholder="Search..."
@@ -142,12 +147,7 @@ export default function TopNav({
           </div>
 
           {/* Notifications */}
-          <button>
-            <FontAwesomeIcon
-              icon={faBell}
-              className="cursor-pointer w-5 h-5 hover:text-indigo-300 transition"
-            />
-          </button>
+          <NotificationBell />
 
           {/* Avatar → Sidebar */}
           <button
